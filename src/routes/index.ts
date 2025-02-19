@@ -14,5 +14,8 @@ router.use("/courses", courseRoutes);
 router.use("/playlists", playlistRoutes);
 router.use("/videos", videoRoutes);
 router.use("/enrollment", enrollmentRoutes);
+router.use("/ping", (req, res) => {
+  res.send("pong");
+});
 
 export default router;
