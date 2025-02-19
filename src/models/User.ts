@@ -1,7 +1,16 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
-export class User extends Model {}
+class User extends Model {
+  public id!: number;
+  public name!: string;
+  public email!: string;
+  public password!: string;
+  public role!: "admin" | "student"; // Enum for roles
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 User.init(
   {
@@ -19,6 +28,15 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM("admin", "student"),
+      allowNull: false,
+      defaultValue: "student",
+    },
   },
   {
     sequelize,
@@ -27,3 +45,5 @@ User.init(
     timestamps: true,
   }
 );
+
+export default User;
