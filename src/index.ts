@@ -4,12 +4,14 @@ import routes from "./routes";
 import { User, Course, Playlist, Video, Enrollment, Payment } from "./models";
 const cron = require("node-cron");
 const axios = require("axios");
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 
 // Routes
 app.use("/api/v1", routes);

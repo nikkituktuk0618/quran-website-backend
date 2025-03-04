@@ -7,9 +7,9 @@ class Course extends Model {
   public title!: string;
   public description!: string;
   public fee_amount!: number;
-  public fee_type!: "one-time" | "Enrollment";
+  public fee_type!: "one-time" | "subscription";
+  public plan_id!: string | null;
   public created_by!: number;
-
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
 }
@@ -34,8 +34,12 @@ Course.init(
       allowNull: false,
     },
     fee_type: {
-      type: DataTypes.ENUM("one-time", "Enrollment"),
+      type: DataTypes.ENUM("one-time", "subscription"),
       allowNull: false,
+    },
+    plan_id: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     created_by: {
       type: DataTypes.INTEGER,

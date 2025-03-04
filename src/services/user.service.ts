@@ -1,7 +1,11 @@
 import User from "../models/User";
 
 export const getAllUsersService = async () => {
-  return await User.findAll();
+  return await User.findAll({
+    where: {
+      role: "student",
+    },
+  });
 };
 
 export const createUserService = async (userData: any) => {
