@@ -59,6 +59,7 @@ export const createEnrollment = async (user_id: number, course_id: number) => {
     pg_order_id: order.id,
     enrollment_type: "inactive",
     payment_status: "pending",
+    razorpay_status: "created",
   });
   return {
     pg_order_id: order.id,

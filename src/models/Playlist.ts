@@ -45,6 +45,12 @@ Playlist.init(
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
+    indexes: [
+      {
+        unique: true,
+        fields: ["course_id", "playlist_order"], // Enforces uniqueness within a course
+      },
+    ],
   }
 );
 
