@@ -13,6 +13,9 @@ const razorpay = new Razorpay({
 export const createEnrollment = async (user_id: number, course_id: number) => {
   const course = await Course.findByPk(course_id);
   if (!course) throw new Error("Course not found");
+  if (course && course.fee_type !== "one-time") {
+    throw new Error("Invalid action. cannot create enrollment");
+  }
 
   const user = await User.findByPk(user_id);
   if (!user) throw new Error("User not found");

@@ -1,6 +1,6 @@
 // src/models/Video.ts
 import { DataTypes, Model } from "sequelize";
-import {sequelize} from "../config/database";
+import { sequelize } from "../config/database";
 import Playlist from "./Playlist";
 
 class Video extends Model {
@@ -49,6 +49,12 @@ Video.init(
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
+    indexes: [
+      {
+        unique: true,
+        fields: ["playlist_id", "video_order"], // Enforces uniqueness within a playlist
+      },
+    ],
   }
 );
 

@@ -23,7 +23,8 @@ class Enrollment extends Model {
     | "paused"
     | "expired"
     | "completed"
-    | "attempted";
+    | "attempted"
+    | "captured";
 
   public auto_renewal!: boolean;
   public grace_period_end!: Date | null;
@@ -104,6 +105,12 @@ Enrollment.init(
     tableName: "enrollments",
     modelName: "Enrollment",
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["user_id", "course_id"], // Enforces uniqueness within a playlist
+      },
+    ],
   }
 );
 
