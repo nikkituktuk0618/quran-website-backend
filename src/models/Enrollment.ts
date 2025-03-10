@@ -1,6 +1,8 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/database";
-
+import Course from "./Course";
+import User from "./User";
+import Payment from "./Payment";
 class Enrollment extends Model {
   public id!: number;
   public user_id!: number;
@@ -24,7 +26,8 @@ class Enrollment extends Model {
     | "expired"
     | "completed"
     | "attempted"
-    | "captured";
+    | "captured"
+    | "failed";
 
   public auto_renewal!: boolean;
   public grace_period_end!: Date | null;
@@ -86,7 +89,9 @@ Enrollment.init(
         "paused",
         "expired",
         "completed",
-        "attempted"
+        "attempted",
+        "captured",
+        "failed"
       ),
       allowNull: false,
       defaultValue: "pending",
@@ -113,5 +118,16 @@ Enrollment.init(
     ],
   }
 );
+Enrollment.hasMany(Payment, { foreignKey: "enrollment_id", as: "payments" });
+Payment.belongsTo(Enrollment, {
+  foreignKey: "enrollment_id",
+  as: "enrollment",
+});
+
+Enrollment.belongsTo(Course, { foreignKey: "course_id", as: "course" });
+Course.hasMany(Enrollment, { foreignKey: "course_id", as: "enrollments" });
+
+Enrollment.belongsTo(User, { foreignKey: "user_id", as: "user" });
+User.hasMany(Enrollment, { foreignKey: "user_id", as: "enrollments" });
 
 export default Enrollment;

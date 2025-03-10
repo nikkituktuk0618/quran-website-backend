@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import {
   createEnrollment,
   handlePaymentSuccess,
+  getUserEnrolledCoursesService,
+  getAllCoursesWithEnrollmentsService,
+  getAllPaymentsService,
+  getUserPaymentsService,
 } from "../services/enrollment.service";
 import {
   createSubscriptionToACourse,
@@ -29,8 +33,9 @@ export const pgWebhooksHandler = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
     console.log(JSON.stringify(req.body.payload.payment.entity));
-    const payment_status = req.body.event;
+
     const order = req.body.payload.payment.entity;
+    const payment_status = order.status;
     const pg_transaction_id = order.id;
     const pg_order_id = order.order_id;
     const amount = order.amount;
@@ -133,5 +138,93 @@ export const pgSubscriptionWebhooksHandler = async (
     res.json("ok");
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUserEnrolledCourses = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const enrolledCourses = await getUserEnrolledCoursesService(userId);
+
+    if (!enrolledCourses.length) {
+      return res
+        .status(404)
+        .json({ message: "User is not enrolled in any courses" });
+    }
+
+    return res.json({ userId, enrolledCourses });
+  } catch (error: any) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+export const getAllCoursesWithEnrollments = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const coursesWithEnrollments = await getAllCoursesWithEnrollmentsService();
+
+    if (!coursesWithEnrollments.length) {
+      return res
+        .status(404)
+        .json({ message: "No courses found with enrollments" });
+    }
+
+    return res.json({ courses: coursesWithEnrollments });
+  } catch (error: any) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+export const getUserPayments = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const userId = parseInt(req.params.userId);
+    if (!userId)
+      return res.status(400).json({ message: "User ID is required" });
+
+    const payments = await getUserPaymentsService(userId);
+    if (!payments.length)
+      return res
+        .status(404)
+        .json({ message: "No payments found for this user" });
+
+    return res.json({ payments });
+  } catch (error: any) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+export const getAllPayments = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const payments = await getAllPaymentsService();
+    if (!payments.length)
+      return res.status(404).json({ message: "No payments found" });
+
+    return res.json({ payments });
+  } catch (error: any) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };

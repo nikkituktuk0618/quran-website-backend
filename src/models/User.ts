@@ -6,6 +6,7 @@ class User extends Model {
   public name!: string;
   public email!: string;
   public password!: string;
+  public phone!: string;
   public role!: "admin" | "student"; // Enum for roles
 
   public readonly createdAt!: Date;
@@ -24,6 +25,11 @@ User.init(
       allowNull: false,
     },
     email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    phone: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,

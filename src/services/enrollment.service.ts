@@ -83,13 +83,16 @@ export const handlePaymentSuccess = async (
     console.log(enrollment);
     if (!enrollment) throw new Error("Enrollment not found");
 
-    if (payment_status === "payment.captured") {
+    if (payment_status === "captured") {
       enrollment.enrollment_type = "active";
       enrollment.payment_status = "success";
-    } else if (payment_status === "payment.failed") {
+      enrollment.razorpay_status = "captured";
+    } else if (payment_status === "failed") {
       enrollment.enrollment_type = "inactive";
       enrollment.payment_status = "failed";
+      enrollment.razorpay_status = "failed";
     }
+    console.log("Enrollment saving");
     await enrollment.save();
     console.log("Enrollment saved");
     // Store Payment Record
@@ -99,8 +102,7 @@ export const handlePaymentSuccess = async (
       pg_order_id,
       pg_transaction_id,
       payment_amount: amount / 100,
-      payment_status:
-        payment_status === "payment.captured" ? "success" : "failed",
+      payment_status: payment_status === "captured" ? "success" : "failed",
       payment_date: new Date(),
     });
   } catch (error: any) {
@@ -108,4 +110,140 @@ export const handlePaymentSuccess = async (
   }
 
   return "Enrollment activated";
+};
+
+export const getUserEnrolledCoursesService = async (userId: number) => {
+  const enrollments = await Enrollment.findAll({
+    where: { user_id: userId },
+    include: [
+      {
+        model: Course,
+        as: "course",
+        attributes: [
+          "id",
+          "title",
+          "description",
+          "fee_amount",
+          "fee_type",
+          "created_by",
+        ],
+      },
+    ],
+    attributes: [
+      "id",
+      "enrollment_type",
+      "start_date",
+      "end_date",
+      "payment_status",
+    ],
+  });
+
+  return enrollments;
+};
+
+export const getAllCoursesWithEnrollmentsService = async () => {
+  const coursesWithEnrollments = await Course.findAll({
+    include: [
+      {
+        model: Enrollment,
+        as: "enrollments",
+        attributes: [
+          "id",
+          "enrollment_type",
+          "start_date",
+          "end_date",
+          "payment_status",
+        ],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "name", "email", "phone", "role"], // Add 'phone' if it's in your User model
+          },
+        ],
+      },
+    ],
+    attributes: [
+      "id",
+      "title",
+      "description",
+      "fee_amount",
+      "fee_type",
+      "created_by",
+    ],
+  });
+
+  return coursesWithEnrollments;
+};
+
+export const getUserPaymentsService = async (userId: number) => {
+  return await Payment.findAll({
+    include: [
+      {
+        model: Enrollment,
+        as: "enrollment",
+        where: { user_id: userId },
+        attributes: ["id", "enrollment_type", "start_date", "end_date"],
+        include: [
+          {
+            model: Course,
+            as: "course",
+            attributes: [
+              "id",
+              "title",
+              "description",
+              "fee_amount",
+              "fee_type",
+            ],
+          },
+        ],
+      },
+    ],
+    attributes: [
+      "id",
+      "pg_order_id",
+      "payment_amount",
+      "payment_status",
+      "pg_transaction_id",
+      "payment_date",
+    ],
+  });
+};
+
+export const getAllPaymentsService = async () => {
+  return await Payment.findAll({
+    include: [
+      {
+        model: Enrollment,
+        as: "enrollment",
+        attributes: ["id", "enrollment_type", "start_date", "end_date"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "name", "email", "phone", "role"],
+          },
+          {
+            model: Course,
+            as: "course",
+            attributes: [
+              "id",
+              "title",
+              "description",
+              "fee_amount",
+              "fee_type",
+            ],
+          },
+        ],
+      },
+    ],
+    attributes: [
+      "id",
+      "pg_order_id",
+      "payment_amount",
+      "payment_status",
+      "pg_transaction_id",
+      "payment_date",
+    ],
+  });
 };
