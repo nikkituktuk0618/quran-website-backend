@@ -8,7 +8,8 @@ export const signup = async (
   name: string,
   email: string,
   password: string,
-  role: "admin" | "student"
+  role: "admin" | "student",
+  phone: string
 ) => {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) throw new Error("User already exists");
@@ -19,6 +20,7 @@ export const signup = async (
     email,
     password: hashedPassword,
     role,
+    phone,
   });
 
   const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET_KEY, {

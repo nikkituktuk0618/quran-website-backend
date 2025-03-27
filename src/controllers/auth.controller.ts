@@ -7,8 +7,8 @@ export const signupController = async (
   res: Response
 ): Promise<any> => {
   try {
-    const { name, email, password, role } = req.body;
-    const response = await signup(name, email, password, role);
+    const { name, email, password, role, phone } = req.body;
+    const response = await signup(name, email, password, role, phone);
     return res.status(201).json(response);
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
