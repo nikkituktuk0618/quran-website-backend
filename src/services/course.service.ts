@@ -48,6 +48,15 @@ export const getCourseById = async (id: number) => {
 export const updateCourse = async (id: number, updates: Partial<Course>) => {
   const course = await Course.findByPk(id);
   if (!course) throw new Error("Course not found");
+  const enrollmentCount = await Enrollment.count({ where: { id } });
+
+  if (enrollmentCount > 0) {
+    throw new Error("Course cannot be updated as users are enrolled.");
+  }
+  if (updates.fee_type === "subscription") {
+    updates.plan_id = await createPGPlan(Number(updates.fee_amount));
+  }
+
   return await course.update(updates);
 };
 

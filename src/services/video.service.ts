@@ -44,3 +44,7 @@ export const deleteVideoService = async (id: number) => {
 export const getVideosByPlaylistService = async (playlist_id: number) => {
   return await Video.findAll({ where: { playlist_id } });
 };
+
+export const getVideoByIdService = async (videoId: number) => {
+  return await Video.findByPk(videoId);
+};

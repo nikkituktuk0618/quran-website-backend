@@ -5,6 +5,7 @@ import {
   updateVideo,
   deleteVideo,
   getVideosByPlaylist,
+  getVideoById,
 } from "../controllers/video.controller";
 import { authenticate } from "../middlewares/auth.middlewares";
 import { authorize } from "../middlewares/authorize";
@@ -15,5 +16,6 @@ router.post("/", authenticate, authorize(["admin"]), createVideo);
 router.put("/:id", authenticate, authorize(["admin"]), updateVideo);
 router.delete("/:id", authenticate, authorize(["admin"]), deleteVideo);
 router.get("/playlist/:playlist_id", authenticate, getVideosByPlaylist);
+router.get("/:id", authenticate, getVideoById);
 
 export default router;
