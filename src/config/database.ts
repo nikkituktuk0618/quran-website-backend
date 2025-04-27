@@ -12,7 +12,7 @@ import { Sequelize } from "sequelize";
 // );
 
 export const sequelize = new Sequelize(
-  "postgresql://dev_qe_db_j3v2_user:oBWrrpOBYnw6hk5ClUYBuOiMKwqsA5x0@dpg-cvie1fmuk2gs73amm730-a.oregon-postgres.render.com/dev_qe_db_j3v2",
+  "postgresql://dev_qe_db_guxv_user:V1PEJzEbPTPsWmsEHO7dxXH4CfDwXsVX@dpg-d076s93uibrs73f7cl00-a.oregon-postgres.render.com/dev_qe_db_guxv",
   {
     dialect: "postgres",
     protocol: "postgres",
